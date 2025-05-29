@@ -37,8 +37,30 @@ pipeline {
       }
       steps {
         script {
-            sh 'apt-get update && apt-get install -y --no-install-recommends docker-ce-cli'
-            echo "Docker CLI installed."
+
+             sh '''
+            # Install prerequisites
+            apt-get update
+            apt-get install -y --no-install-recommends ca-certificates curl gnupg
+            
+            # Add Docker's official GPG key
+            install -m 0755 -d /etc/apt/keyrings
+            curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+            chmod a+r /etc/apt/keyrings/docker.gpg
+            
+            # Set up the repository
+            echo \
+              "deb [arch=$(dpkg --print-architecture ) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+              $(. /etc/os-release && echo "$VERSION_CODENAME" ) stable" | \
+              tee /etc/apt/sources.list.d/docker.list > /dev/null
+              
+            # Update apt package index again and install Docker CLI
+            apt-get update
+            apt-get install -y --no-install-recommends docker-ce-cli
+            
+            echo "Docker CLI installed successfully."
+            '''
+            
             sh 'cd java-maven-sonar-argocd-helm-k8s/spring-boot-app && docker build -t ${DOCKER_IMAGE} .'
             def dockerImage = docker.image("${DOCKER_IMAGE}")
             docker.withRegistry('https://index.docker.io/v1/', "docker-cred") {
