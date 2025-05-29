@@ -77,9 +77,19 @@ pipeline {
         steps {
             withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
                 sh '''
-                    echo "--- Current directory (should be workspace root) ---"
+                    echo "--- Current directory ---"
                     pwd
-                    ls -al .git # Verify .git directory exists here
+                    echo "--- Listing .git directory ---"
+                    ls -al .git
+                    
+                    echo "--- Checking Git environment variables ---"
+                    env | grep GIT || echo "No GIT environment variables found"
+
+                    echo "--- Checking Git version ---"
+                    git --version
+
+                    echo "--- Trying git status ---"
+                    git status
 
                     git config user.email "nehussingh7@gmail.com"
                     git config user.name "Neha Singh"
