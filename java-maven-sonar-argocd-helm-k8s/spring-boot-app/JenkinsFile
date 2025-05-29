@@ -77,14 +77,9 @@ pipeline {
         steps {
             withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
                 sh '''
-                    echo "--- Listing workspace root ---"
-                    ls -al
-                
-                    echo "--- Changing directory to java-maven-sonar-argocd-helm-k8s ---"
-                    cd java-maven-sonar-argocd-helm-k8s 
-                
-                    echo "--- Listing contents of java-maven-sonar-argocd-helm-k8s ---"
-                    ls -al
+                    echo "--- Current directory (should be workspace root) ---"
+                    pwd
+                    ls -al .git # Verify .git directory exists here
 
                     git config user.email "nehussingh7@gmail.com"
                     git config user.name "Neha Singh"
